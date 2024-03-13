@@ -1,8 +1,14 @@
 const getContacts=(req,res)=>{
-    res.send("<h1>Hello from Controller </h1>")
+    res.status(200).json({message:"Hello from controller"})
 }
 
 const createContact=(req,res)=>{
+    console.log(req.body)
+    const {name,email,phone} = req.body
+    if(!name || !email || !phone){
+        res.status(400)
+        throw new Error("All Fields are manadatory")
+    }
     res.send("<h1>Creating Contact </h1>")
 }
 
