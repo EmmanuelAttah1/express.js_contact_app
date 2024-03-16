@@ -1,24 +1,50 @@
-const getContacts=(req,res)=>{
-    res.status(200).json({message:"Hello from controller"})
-}
+const asyncHandler = require("express-async-handler")
+const Contact = require("../models/contactModel")
 
-const createContact=(req,res)=>{
+const getContacts= asyncHandler(async (req,res)=>{
+    const contacts = await Contact.find()
+    res.status(200).json(contacts)
+})
+
+const createContact= asyncHandler(async (req,res)=>{
     console.log(req.body)
     const {name,email,phone} = req.body
     if(!name || !email || !phone){
         res.status(400)
         throw new Error("All Fields are manadatory")
     }
-    res.send("<h1>Creating Contact </h1>")
-}
+    const contact = await Contact.create({
+        name,
+        email,
+        phone
+    })
 
-const updateContact=(req,res)=>{
-    res.send("<h1>Updating Contact </h1>")
-}
+    res.status(201).json(contact)
+})
 
-const deleteContact=(req,res)=>{
-    res.send("<h1>Deleting Contact </h1>")
-}
+const updateContact= asyncHandler(async (req,res)=>{
+    const contact =  await Contact.findById(req.params.id)
+    if(!contact){
+        res.status(404)
+        throw new Error("Contact not found")
+    }
+    const updated_contact = await Contact.findByIdAndUpdate(
+        contact.id,
+        req.body,
+        {new:true}
+    )
+    res.status(200).json(updated_contact)
+})
+
+const deleteContact= asyncHandler(async (req,res)=>{
+    const contact =  await Contact.findById(req.params.id)
+    if(!contact){
+        res.status(404)
+        throw new Error("Contact not found")
+    }
+    await Contact.deleteOne({ _id: req.params.id })
+    res.status(200).json(contact)
+})
 
 
 module.exports = {getContacts,createContact,updateContact,deleteContact};
