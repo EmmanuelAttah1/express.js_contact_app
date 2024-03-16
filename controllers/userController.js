@@ -55,7 +55,7 @@ const loginUser= asyncHandler(async (req,res)=>{
                 username:user.username,
                 _id:user.id
             }
-        },process.env.jwt_secret,{expiresIn:"1m"})
+        },process.env.jwt_secret,{expiresIn:"15m"})
         res.status(200).json({access_token:token})
     }else{
         res.status(401).json({message:"Invalid username or password"})
@@ -64,7 +64,7 @@ const loginUser= asyncHandler(async (req,res)=>{
 })
 
 const currentUserInformation= asyncHandler(async (req,res)=>{
-    res.status(201).json({messgae:"Current user information"})
+    res.status(201).json(req.user)
 })
 
 module.exports = {registerUser,loginUser,currentUserInformation};
