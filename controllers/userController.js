@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler")
 const User = require("../models/userModel")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 const registerUser= asyncHandler(async (req,res)=>{
     const {username, email, password} = req.body
@@ -49,9 +50,16 @@ const loginUser= asyncHandler(async (req,res)=>{
     const is_valid = await bcrypt.compare(password, user.password)
 
     if(is_valid){
-        res.status(200).json({message:`Welcome ${user.username}`})
+        const token = jwt.sign({
+            user:{
+                username:user.username,
+                _id:user.id
+            }
+        },process.env.jwt_secret,{expiresIn:"1m"})
+        res.status(200).json({access_token:token})
     }else{
         res.status(401).json({message:"Invalid username or password"})
+
     }
 })
 
