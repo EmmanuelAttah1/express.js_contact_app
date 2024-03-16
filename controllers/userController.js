@@ -10,6 +10,12 @@ const registerUser= asyncHandler(async (req,res)=>{
         throw new Error("All Fields required")
     }
 
+    const userAvailable = await User.findOne({email:email})
+
+    if(userAvailable){
+        res.status(200).json({message:"User with this email already exist"})
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashed_password = await bcrypt.hash(password,salt)
 
